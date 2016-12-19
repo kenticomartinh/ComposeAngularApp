@@ -2,11 +2,12 @@
 
 (function() {
     var COMPOSE = 'http://localhost:59691/';
+    var PROJECT_ID = '85e06f31-6a8f-405c-ba9c-dc7aed4ed373';
 
     angular
         .module('myApp.compose', ['ngSanitize', 'angularLoad', 'customWidget'])
         .directive(
-            'widgetZone', 
+            'editableArea', 
             [
                 '$http', 'angularLoad', '$sce',
                 function($http, angularLoad, $sce) {
@@ -18,7 +19,7 @@
                     },
 
                     initComponents = function() {
-                        cmsrequire(['jQuery', 'FX/Activator'], function($, activator) {
+                        cmsrequire(['jQuery', 'Activator'], function($, activator) {
                             registerComponents(function (name) { 
                                 activator.registerActivation(
                                     'angular-component-' + name.toLowerCase(),
@@ -69,9 +70,9 @@
                                 appPath: COMPOSE
                             };
 
-                            angularLoad.loadScript(COMPOSE + 'js/FX/RequireJS/require.js').then(function() {
-                                angularLoad.loadScript(COMPOSE + 'js/FX/RequireJS/config.js').then(function() {
-                                    cmsrequire(['FX/WidgetManager']);
+                            angularLoad.loadScript(COMPOSE + 'js/RequireJS/require.js').then(function() {
+                                angularLoad.loadScript(COMPOSE + 'js/RequireJS/config.js').then(function() {
+                                    cmsrequire(['WidgetManager']);
 
                                     initComponents();
                                 });
@@ -81,18 +82,18 @@
 
                     return {
                         scope: {
-                            zoneId: '@'
+                            areaId: '@'
                         },
-                        template : '<div class="compose" ng-bind-html="zoneHtml"></div>',
+                        template : '<div class="compose" ng-bind-html="areaHtml"></div>',
 
                         controller: function($scope, $element, $attrs, $location) {
-                            var url = COMPOSE + 'WidgetManager/Zone?design=1&location=data:' + $scope.zoneId;
-                            $scope.zoneHtml = 'Loading zone content ...';
+                            var url = COMPOSE + 'widgets/editablearea?location=' + PROJECT_ID + ':' + $scope.areaId;
+                            $scope.areaHtml = 'Loading editable area content ...';
                                                 
                             $http({
                                 url : url
                             }).then(function (response) {
-                                $scope.zoneHtml = $sce.trustAsHtml(response.data);
+                                $scope.areaHtml = $sce.trustAsHtml(response.data);
                             }, function (error) {
                                 console.log(error);
                             });
